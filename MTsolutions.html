@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)file:///C:/Users/andreas/Downloads/mtsolutions_7.html -->
+<html lang="el"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTsolutions</title>
+<link href="./MTsolutions_files/css2" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--surface:#181c27;--surface2:#1f2436;--border:rgba(255,255,255,0.07);--text:#e8e6e0;--muted:#6b7080;--housing:#c9a96e;--housing-soft:rgba(201,169,110,0.12);--web:#5b9bd5;--web-soft:rgba(91,155,213,0.12);--accent:#2e6b3e;--accent-soft:rgba(46,107,62,0.15);--danger:#c0616a;--danger-soft:rgba(192,97,106,0.15);--deadline:#e05555;--deadline-soft:rgba(224,85,85,0.15);--success:#5aaa72;--personal:#a78bca;--personal-soft:rgba(167,139,202,0.12);--radius:12px;--shadow:0 8px 32px rgba(0,0,0,0.4);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+#loginScreen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3rem 3.5rem;width:380px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:1.5rem;animation:fadeUp 0.6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.login-logo{text-align:center;}
+.login-logo h1{font-size:2.6rem;color:var(--text);letter-spacing:1px;}
+.login-logo h1 span{color:var(--accent);}
+.login-logo p{color:var(--muted);font-size:0.82rem;letter-spacing:3px;text-transform:uppercase;margin-top:0.3rem;}
+.login-card input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1rem;color:var(--text);font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;}
+.login-card input:focus{border-color:var(--accent);}
+.btn-login{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0.9rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s,transform 0.1s;}
+.btn-login:hover{opacity:0.88;transform:translateY(-1px);}
+.login-error{color:var(--danger);font-size:0.85rem;text-align:center;display:none;}
+
+#app{display:none;height:100vh;flex-direction:column;}
+#app.visible{display:flex;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.topbar-logo{font-size:1.5rem;letter-spacing:1px;font-family:'Cormorant Garamond',serif;}
+.topbar-logo span{color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.topbar-date{color:var(--muted);font-size:0.82rem;}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.35rem 0.9rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+.main-layout{display:flex;flex:1;overflow:hidden;}
+
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.5rem 0;gap:0.15rem;}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.5rem;cursor:pointer;color:var(--muted);font-size:0.88rem;font-weight:500;border-left:3px solid transparent;transition:all 0.2s;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+.nav-item.active{color:var(--text);background:rgba(46,107,62,0.1);border-left-color:var(--accent);}
+.nav-icon{font-size:1.1rem;width:22px;text-align:center;}
+.nav-section{color:var(--muted);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;padding:1rem 1.5rem 0.3rem;margin-top:0.5rem;}
+
+.content{flex:1;overflow-y:auto;padding:2rem;}
+.page{display:none;animation:fadeIn 0.3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.page-title{font-size:1.9rem;font-weight:600;font-family:'Cormorant Garamond',serif;}
+.page-title small{display:block;font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:400;margin-top:0.1rem;}
+.btn-add{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0.65rem 1.2rem;font-size:0.82rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;display:flex;align-items:center;gap:0.4rem;}
+.btn-add:hover{opacity:0.85;transform:translateY(-1px);}
+
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.cal-nav button{background:var(--surface);border:1px solid var(--border);color:var(--text);width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:1rem;transition:all 0.2s;margin-right:4px;}
+.cal-nav button:hover{background:var(--surface2);}
+.cal-month{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;}
+.cal-legend{display:flex;gap:1rem;margin-left:auto;align-items:center;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--muted);}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+.cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;}
+.cal-grid-header div{text-align:center;font-size:0.7rem;color:var(--muted);letter-spacing:2px;padding:0.4rem 0;text-transform:uppercase;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-day{background:var(--surface);border:1px solid var(--border);border-radius:8px;min-height:108px;padding:0.45rem;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;}
+.cal-day:hover{border-color:var(--accent);background:var(--surface2);}
+.cal-day:hover .cal-add-hint{opacity:1;}
+.cal-add-hint{position:absolute;bottom:4px;right:5px;font-size:0.58rem;color:var(--accent);opacity:0;transition:opacity 0.2s;pointer-events:none;}
+.cal-day.other-month{opacity:0.28;}
+.cal-day.today{border-color:var(--accent);}
+.cal-day-num{font-size:0.8rem;font-weight:500;margin-bottom:0.25rem;}
+.cal-day.today .cal-day-num{background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;}
+.cal-event-pill{font-size:0.62rem;padding:0.12rem 0.4rem;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.cal-event-pill.housing{background:var(--housing-soft);color:var(--housing);border-left:2px solid var(--housing);}
+.cal-event-pill.web{background:var(--web-soft);color:var(--web);border-left:2px solid var(--web);}
+.cal-event-pill.deadline{background:var(--deadline-soft);color:var(--deadline);border-left:2px solid var(--deadline);animation:blink 2s infinite;}
+.cal-event-pill.personal{background:var(--personal-soft);color:var(--personal);border-left:2px solid var(--personal);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.55;}}
+
+/* CLIENTS */
+.toolbar{display:flex;gap:0.75rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap;}
+.search-input{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.65rem 1rem;color:var(--text);font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;flex:1;min-width:180px;max-width:300px;}
+.search-input:focus{border-color:var(--accent);}
+.filter-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:0.6rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem;transition:all 0.2s;position:relative;}
+.client-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:rgba(255,255,255,0.12);}
+.c-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;margin-bottom:0.9rem;}
+.c-avatar.housing{background:var(--housing-soft);color:var(--housing);}
+.c-avatar.web{background:var(--web-soft);color:var(--web);}
+.c-avatar.cooperator{background:var(--accent-soft);color:var(--accent);}
+.c-name{font-size:0.98rem;font-weight:600;margin-bottom:0.18rem;}
+.c-type{font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.7rem;}
+.c-type.housing{color:var(--housing);}
+.c-type.web{color:var(--web);}
+.c-type.cooperator{color:var(--accent);}
+.c-row{display:flex;align-items:center;gap:0.45rem;font-size:0.78rem;color:var(--muted);margin-bottom:0.2rem;}
+.c-row span:last-child{color:var(--text);}
+.del-btn{position:absolute;top:0.7rem;right:0.7rem;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:0.82rem;padding:0.2rem 0.4rem;border-radius:4px;opacity:0;transition:all 0.2s;}
+.client-card:hover .del-btn,.reservation-card:hover .del-btn,.project-card:hover .del-btn,.vault-card:hover .del-btn{opacity:1;}
+.del-btn:hover{color:var(--danger);}
+
+/* HOUSING */
+.tab-row{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.tab-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1.1rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.tab-btn.active{background:var(--housing-soft);border-color:var(--housing);color:var(--housing);}
+.res-list{display:flex;flex-direction:column;gap:0.7rem;}
+.reservation-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;display:flex;align-items:center;gap:1.3rem;transition:all 0.2s;position:relative;}
+.reservation-card:hover{border-color:var(--housing);}
+.res-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.res-dot.active{background:var(--success);}
+.res-dot.upcoming{background:var(--housing);}
+.res-dot.past{background:var(--muted);}
+.res-info{flex:1;}
+.res-name{font-size:0.98rem;font-weight:600;margin-bottom:0.18rem;}
+.res-meta{font-size:0.78rem;color:var(--muted);}
+.res-badge{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;padding:0.28rem 0.65rem;border-radius:20px;font-weight:600;flex-shrink:0;}
+.res-badge.active{background:rgba(90,170,114,0.15);color:var(--success);}
+.res-badge.upcoming{background:var(--housing-soft);color:var(--housing);}
+.res-badge.past{background:rgba(107,112,128,0.15);color:var(--muted);}
+.res-nights{text-align:right;flex-shrink:0;}
+.res-nights strong{display:block;font-size:1.2rem;font-family:'Cormorant Garamond',serif;color:var(--text);}
+.res-nights span{font-size:0.72rem;color:var(--muted);}
+
+/* PROJECTS */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;}
+.project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;transition:all 0.2s;position:relative;}
+.project-card:hover{border-color:var(--web);transform:translateY(-2px);}
+.p-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.4rem;}
+.p-name{font-size:1rem;font-weight:600;}
+.p-status{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;padding:0.22rem 0.55rem;border-radius:20px;font-weight:600;flex-shrink:0;}
+.p-status.active{background:rgba(90,170,114,0.15);color:var(--success);}
+.p-status.pending{background:var(--web-soft);color:var(--web);}
+.p-status.completed{background:rgba(107,112,128,0.15);color:var(--muted);}
+.p-client{font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;}
+.p-deadline{font-size:0.73rem;color:var(--deadline);margin-bottom:0.8rem;display:flex;align-items:center;gap:0.3rem;}
+.p-deadline.overdue{color:var(--danger);font-weight:600;}
+.progress-bar{background:var(--surface2);border-radius:4px;height:4px;margin-bottom:0.35rem;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;background:var(--web);transition:width 0.5s ease;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);}
+.p-tags{display:flex;gap:0.5rem;margin-top:0.9rem;padding-top:0.9rem;border-top:1px solid var(--border);flex-wrap:wrap;}
+.p-tag{font-size:0.68rem;background:var(--web-soft);color:var(--web);padding:0.18rem 0.55rem;border-radius:4px;}
+
+/* VAULT */
+.vault-warn{background:rgba(192,97,106,0.1);border:1px solid rgba(192,97,106,0.3);border-radius:8px;padding:0.75rem 1.1rem;margin-bottom:1.4rem;font-size:0.8rem;color:var(--danger);}
+.vault-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;}
+.vault-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;transition:all 0.2s;position:relative;}
+.vault-card:hover{border-color:rgba(255,255,255,0.14);}
+.v-service{font-size:0.98rem;font-weight:600;margin-bottom:0.15rem;}
+.v-cat{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:0.9rem;}
+.v-field{display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;border-bottom:1px solid var(--border);}
+.v-field:last-of-type{border-bottom:none;}
+.v-label{font-size:0.72rem;color:var(--muted);}
+.v-val{font-size:0.8rem;font-family:monospace;color:var(--text);}
+.copy-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:0.72rem;padding:0.18rem 0.45rem;border-radius:4px;transition:all 0.2s;}
+.copy-btn:hover{color:var(--text);background:var(--surface2);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;width:490px;max-width:95vw;max-height:88vh;overflow-y:auto;animation:fadeUp 0.22s ease;}
+.m-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;}
+.m-title{font-size:1.35rem;font-weight:600;font-family:'Cormorant Garamond',serif;}
+.m-close{background:transparent;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;}
+.m-close:hover{color:var(--text);}
+.fg{margin-bottom:1rem;}
+.fl{display:block;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.45rem;}
+.fi,.fs,.ft{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.72rem 0.95rem;color:var(--text);font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--accent);}
+.fs option{background:var(--surface2);}
+.ft{resize:vertical;min-height:72px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;}
+.m-actions{display:flex;gap:0.7rem;justify-content:flex-end;margin-top:1.4rem;}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.65rem 1.3rem;border-radius:8px;cursor:pointer;font-size:0.86rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.btn-cancel:hover{border-color:var(--text);color:var(--text);}
+.btn-save{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0.65rem 1.4rem;font-size:0.86rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-save:hover{opacity:0.87;}
+.dl-hint{font-size:0.7rem;color:var(--deadline);margin-top:0.25rem;}
+.day-item{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:0.7rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.day-item-left{display:flex;align-items:flex-start;gap:0.7rem;flex:1;}
+.day-item-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.day-item-title{font-size:0.9rem;font-weight:600;margin-bottom:0.15rem;}
+.day-item-meta{font-size:0.75rem;color:var(--muted);}
+.day-item-notes{font-size:0.73rem;color:var(--muted);margin-top:0.2rem;font-style:italic;}
+.day-del-btn{background:var(--danger-soft);border:1px solid rgba(192,97,106,0.3);color:var(--danger);border-radius:6px;padding:0.3rem 0.7rem;font-size:0.72rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all 0.2s;flex-shrink:0;}
+.day-del-btn:hover{background:var(--danger);color:#fff;}
+
+.empty{text-align:center;padding:3rem;color:var(--muted);}
+.empty-icon{font-size:2.4rem;margin-bottom:0.9rem;opacity:0.45;}
+
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1.2rem;font-size:0.83rem;color:var(--text);box-shadow:var(--shadow);z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:3px solid var(--success);}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" style="display: none;">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>MT<span>solutions</span></h1>
+      <p>Workspace Platform</p>
+    </div>
+    <input type="password" id="pwInput" placeholder="Κωδικός πρόσβασης..." onkeydown="if(event.key===&#39;Enter&#39;)login()">
+    <button class="btn-login" onclick="login()">ΕΙΣΟΔΟΣ</button>
+    <div class="login-error" id="pwErr">❌ Λάθος κωδικός. Δοκίμασε ξανά.</div>
+
+  </div>
+</div>
+
+<div id="app" style="display: flex;">
+  <div class="topbar">
+    <div class="topbar-logo">MT<span>solutions</span></div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="topDate">Τρίτη 28 Απριλίου 2026</div>
+      <button class="btn-logout" onclick="logout()">⏻ Έξοδος</button>
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="sidebar">
+      <div class="nav-section">Κύριο</div>
+      <div class="nav-item active" onclick="nav(&#39;calendar&#39;,this)"><span class="nav-icon">📅</span><span>Ημερολόγιο</span></div>
+      <div class="nav-section">Διαχείριση</div>
+      <div class="nav-item" onclick="nav(&#39;clients&#39;,this)"><span class="nav-icon">👥</span><span>Επαφές</span></div>
+      <div class="nav-item" onclick="nav(&#39;housing&#39;,this)"><span class="nav-icon">🏠</span><span>Ακίνητα</span></div>
+      <div class="nav-item" onclick="nav(&#39;web&#39;,this)"><span class="nav-icon">💻</span><span>Web Projects</span></div>
+      <div class="nav-section">Ασφάλεια</div>
+      <div class="nav-item" onclick="nav(&#39;vault&#39;,this)"><span class="nav-icon">🔐</span><span>Θησαυροφ.</span></div>
+    </div>
+    <div class="content">
+
+      <!-- CALENDAR -->
+      <div class="page active" id="page-calendar">
+        <div class="page-header">
+          <div class="page-title">Ημερολόγιο<small>Κλικ σε μέρα για νέο γεγονός</small></div>
+          <button class="btn-add" onclick="openEv(null)">+ Νέο Γεγονός</button>
+        </div>
+        <div class="cal-header">
+          <div class="cal-nav">
+            <button onclick="chMo(-1)">‹</button>
+            <button onclick="chMo(1)">›</button>
+          </div>
+          <div class="cal-month" id="calLabel">Απρίλιος 2026</div>
+          <div class="cal-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--housing)"></div>Ακίνητα</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--web)"></div>Web</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--deadline)"></div>Deadline</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--personal)"></div>Προσωπικό</div>
+          </div>
+        </div>
+        <div class="cal-grid-header">
+          <div>ΔΕΥ</div><div>ΤΡΙ</div><div>ΤΕΤ</div><div>ΠΕΜ</div><div>ΠΑΡ</div><div>ΣΑΒ</div><div>ΚΥΡ</div>
+        </div>
+        <div class="cal-grid" id="calGrid"><div class="cal-day other-month"><div class="cal-day-num">30</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day other-month"><div class="cal-day-num">31</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">1</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">2</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">3</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">4</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">5</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">6</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">7</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">8</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">9</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">10</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">11</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">12</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">13</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">14</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">15</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">16</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">17</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">18</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">19</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">20</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">21</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">22</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">23</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">24</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">25</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">26</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">27</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day today"><div class="cal-day-num">28</div><div class="cal-add-hint">+ Προσθήκη</div><div class="cal-event-pill personal">euroleague</div></div><div class="cal-day"><div class="cal-day-num">29</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day"><div class="cal-day-num">30</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day other-month"><div class="cal-day-num">1</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day other-month"><div class="cal-day-num">2</div><div class="cal-add-hint">+ Προσθήκη</div></div><div class="cal-day other-month"><div class="cal-day-num">3</div><div class="cal-add-hint">+ Προσθήκη</div></div></div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="page" id="page-clients">
+        <div class="page-header">
+          <div class="page-title">Επαφές<small>Πελάτες &amp; Συνεργάτες</small></div>
+          <button class="btn-add" onclick="openM(&#39;mClient&#39;)">+ Νέα Επαφή</button>
+        </div>
+        <div class="toolbar">
+          <input class="search-input" type="text" placeholder="🔍 Αναζήτηση..." oninput="srchC(this.value)">
+          <button class="filter-btn active" onclick="filtC(&#39;all&#39;,this)">Όλοι</button>
+          <button class="filter-btn" onclick="filtC(&#39;housing&#39;,this)">🏠 Ακίνητα</button>
+          <button class="filter-btn" onclick="filtC(&#39;web&#39;,this)">💻 Web</button>
+          <button class="filter-btn" onclick="filtC(&#39;cooperator&#39;,this)">🤝 Συνεργάτες</button>
+        </div>
+        <div class="cards-grid" id="clientsGrid"><div class="empty"><div class="empty-icon">👥</div><p>Δεν υπάρχουν επαφές ακόμα.</p></div></div>
+      </div>
+
+      <!-- HOUSING -->
+      <div class="page" id="page-housing">
+        <div class="page-header">
+          <div class="page-title">Ακίνητα<small>Κρατήσεις &amp; Διαθεσιμότητα</small></div>
+          <button class="btn-add" onclick="openM(&#39;mRes&#39;)">+ Νέα Κράτηση</button>
+        </div>
+        <div class="tab-row">
+          <button class="tab-btn active" onclick="resTab(&#39;all&#39;,this)">Όλες</button>
+          <button class="tab-btn" onclick="resTab(&#39;active&#39;,this)">✅ Ενεργές</button>
+          <button class="tab-btn" onclick="resTab(&#39;upcoming&#39;,this)">📅 Επερχόμενες</button>
+          <button class="tab-btn" onclick="resTab(&#39;past&#39;,this)">🗄 Παλιές</button>
+        </div>
+        <div class="res-list" id="resList"><div class="empty"><div class="empty-icon">🏠</div><p>Δεν υπάρχουν κρατήσεις.</p></div></div>
+      </div>
+
+      <!-- WEB -->
+      <div class="page" id="page-web">
+        <div class="page-header">
+          <div class="page-title">Web Projects<small>Παρακολούθηση Έργων</small></div>
+          <button class="btn-add" onclick="openM(&#39;mProj&#39;)">+ Νέο Project</button>
+        </div>
+        <div class="projects-grid" id="projGrid"><div class="empty"><div class="empty-icon">💻</div><p>Δεν υπάρχουν projects.</p></div></div>
+      </div>
+
+      <!-- VAULT -->
+      <div class="page" id="page-vault">
+        <div class="page-header">
+          <div class="page-title">Θησαυροφυλάκιο<small>Κωδικοί &amp; Πρόσβαση</small></div>
+          <button class="btn-add" onclick="openM(&#39;mVault&#39;)">+ Νέα Εγγραφή</button>
+        </div>
+        <div class="vault-warn">🔒 Ιδιωτικά δεδομένα — μόνο για εσάς και τον/την Mar</div>
+        <div class="vault-grid" id="vaultGrid"><div class="empty"><div class="empty-icon">🔐</div><p>Δεν υπάρχουν εγγραφές.</p></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DAY MODAL -->
+<div class="modal-overlay" id="mDay">
+  <div class="modal" style="width:460px;">
+    <div class="m-header">
+      <div>
+        <div class="m-title" id="dayModalDate"></div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;letter-spacing:1px;">ΓΕΓΟΝΟΤΑ ΗΜΕΡΑΣ</div>
+      </div>
+      <button class="m-close" onclick="closeM(&#39;mDay&#39;)">×</button>
+    </div>
+    <div id="dayModalItems" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem;"></div>
+    <div style="border-top:1px solid var(--border);padding-top:1rem;">
+      <button class="btn-add" id="dayModalAddBtn" style="width:100%;justify-content:center;">+ Προσθήκη Γεγονότος</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="mEvent">
+  <div class="modal">
+    <div class="m-header"><div class="m-title">Νέο Γεγονός / Ραντεβού</div><button class="m-close" onclick="closeM(&#39;mEvent&#39;)">×</button></div>
+    <div class="fg"><label class="fl">Τίτλος *</label><input class="fi" id="e-title" placeholder="π.χ. Check-in Νίκος, Συνάντηση..."></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Έναρξη *</label><input class="fi" type="date" id="e-start"></div>
+      <div class="fg"><label class="fl">Λήξη</label><input class="fi" type="date" id="e-end"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Κατηγορία</label>
+        <select class="fs" id="e-type"><option value="housing">🏠 Ακίνητο</option><option value="web">💻 Web</option><option value="deadline">🔴 Deadline</option><option value="personal">🟣 Προσωπικό</option></select></div>
+      <div class="fg"><label class="fl">Επαφή</label><input class="fi" id="e-client" placeholder="Όνομα..."></div>
+    </div>
+    <div class="fg"><label class="fl">Τηλέφωνο</label><input class="fi" id="e-phone" placeholder="+30 69..."></div>
+    <div class="fg"><label class="fl">Σημειώσεις</label><textarea class="ft" id="e-notes" placeholder="Επιπλέον πληροφορίες..."></textarea></div>
+    <div class="m-actions"><button class="btn-cancel" onclick="closeM(&#39;mEvent&#39;)">Ακύρωση</button><button class="btn-save" onclick="saveEv()">Αποθήκευση</button></div>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="mClient">
+  <div class="modal">
+    <div class="m-header"><div class="m-title">Νέα Επαφή</div><button class="m-close" onclick="closeM(&#39;mClient&#39;)">×</button></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Όνομα *</label><input class="fi" id="c-name" placeholder="Πλήρες όνομα"></div>
+      <div class="fg"><label class="fl">Τύπος</label><select class="fs" id="c-type"><option value="housing">🏠 Ακίνητο</option><option value="web">💻 Web</option><option value="cooperator">🤝 Συνεργάτης</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Τηλέφωνο</label><input class="fi" id="c-phone" placeholder="+30 69..."></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="c-email" placeholder="email@..."></div>
+    </div>
+    <div class="fg"><label class="fl">Σημειώσεις</label><textarea class="ft" id="c-notes" placeholder="Πρόσθετες πληροφορίες..."></textarea></div>
+    <div class="m-actions"><button class="btn-cancel" onclick="closeM(&#39;mClient&#39;)">Ακύρωση</button><button class="btn-save" onclick="saveC()">Αποθήκευση</button></div>
+  </div>
+</div>
+
+<!-- RESERVATION MODAL -->
+<div class="modal-overlay" id="mRes">
+  <div class="modal">
+    <div class="m-header"><div class="m-title">Νέα Κράτηση</div><button class="m-close" onclick="closeM(&#39;mRes&#39;)">×</button></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Επισκέπτης *</label><input class="fi" id="r-name" placeholder="Ονοματεπώνυμο"></div>
+      <div class="fg"><label class="fl">Ακίνητο</label><input class="fi" id="r-prop" placeholder="π.χ. Διαμέρισμα Αθήνα"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Check-in *</label><input class="fi" type="date" id="r-in"></div>
+      <div class="fg"><label class="fl">Check-out *</label><input class="fi" type="date" id="r-out"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Τηλέφωνο</label><input class="fi" id="r-phone" placeholder="+30 69..."></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="r-email" placeholder="email@..."></div>
+    </div>
+    <div class="fg"><label class="fl">Σημειώσεις</label><textarea class="ft" id="r-notes" placeholder="Αριθμός ατόμων, ειδικές απαιτήσεις..."></textarea></div>
+    <div class="m-actions"><button class="btn-cancel" onclick="closeM(&#39;mRes&#39;)">Ακύρωση</button><button class="btn-save" onclick="saveR()">Αποθήκευση</button></div>
+  </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="mProj">
+  <div class="modal">
+    <div class="m-header"><div class="m-title">Νέο Web Project</div><button class="m-close" onclick="closeM(&#39;mProj&#39;)">×</button></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Όνομα *</label><input class="fi" id="p-name" placeholder="Όνομα project"></div>
+      <div class="fg"><label class="fl">Πελάτης</label><input class="fi" id="p-client" placeholder="Όνομα πελάτη"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Κατάσταση</label><select class="fs" id="p-status"><option value="pending">📋 Εκκρεμεί</option><option value="active">🟢 Σε εξέλιξη</option><option value="completed">✅ Ολοκληρώθηκε</option></select></div>
+      <div class="fg"><label class="fl">Πρόοδος (%)</label><input class="fi" type="number" id="p-prog" placeholder="0-100" min="0" max="100"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">🔴 Deadline <span class="dl-hint">— εμφανίζεται κόκκινο στο ημερολόγιο</span></label>
+      <input class="fi" type="date" id="p-deadline">
+    </div>
+    <div class="fg"><label class="fl">Τεχνολογίες</label><input class="fi" id="p-tags" placeholder="React, WordPress, SEO..."></div>
+    <div class="fg"><label class="fl">Σημειώσεις</label><textarea class="ft" id="p-notes" placeholder="Περιγραφή..."></textarea></div>
+    <div class="m-actions"><button class="btn-cancel" onclick="closeM(&#39;mProj&#39;)">Ακύρωση</button><button class="btn-save" onclick="saveP()">Αποθήκευση</button></div>
+  </div>
+</div>
+
+<!-- VAULT MODAL -->
+<div class="modal-overlay" id="mVault">
+  <div class="modal">
+    <div class="m-header"><div class="m-title">Νέα Εγγραφή</div><button class="m-close" onclick="closeM(&#39;mVault&#39;)">×</button></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Υπηρεσία *</label><input class="fi" id="v-svc" placeholder="π.χ. Gmail, Airbnb..."></div>
+      <div class="fg"><label class="fl">Κατηγορία</label><select class="fs" id="v-cat"><option value="Email">📧 Email</option><option value="Social">📱 Social</option><option value="Hosting">🌐 Hosting</option><option value="Banking">🏦 Τράπεζα</option><option value="Platform">⚙️ Πλατφόρμα</option><option value="Other">📁 Άλλο</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Email / Username</label><input class="fi" id="v-user" placeholder="username@..."></div>
+    <div class="fg"><label class="fl">Κωδικός</label><input class="fi" type="password" id="v-pass" placeholder="Κωδικός"></div>
+    <div class="fg"><label class="fl">URL</label><input class="fi" id="v-url" placeholder="https://..."></div>
+    <div class="fg"><label class="fl">Σημειώσεις</label><textarea class="ft" id="v-notes" placeholder="Επιπλέον πληροφορίες..."></textarea></div>
+    <div class="m-actions"><button class="btn-cancel" onclick="closeM(&#39;mVault&#39;)">Ακύρωση</button><button class="btn-save" onclick="saveV()">Αποθήκευση</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PW='mtsolutions2024';
+let D={events:[],clients:[],reservations:[],projects:[],vault:[]};
+const MO=['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος','Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
+let calDt=new Date(),cFilt='all',cSrch='',rFilt='all';
+
+function ld(){try{const s=localStorage.getItem('mts');if(s)D=JSON.parse(s);}catch(e){}}
+function sd(){try{localStorage.setItem('mts',JSON.stringify(D));}catch(e){}}
+
+function login(){
+  if(document.getElementById('pwInput').value===PW){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    ld();init();
+  }else{document.getElementById('pwErr').style.display='block';document.getElementById('pwInput').value='';}
+}
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('pwInput').value='';
+  document.getElementById('pwErr').style.display='none';
+}
+function init(){
+  document.getElementById('topDate').textContent=new Date().toLocaleDateString('el-GR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  renderCal();renderClients();renderRes();renderProj();renderVault();
+}
+
+function nav(pg,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  if(el)el.classList.add('active');
+}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+function toast(msg,t='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+t;setTimeout(()=>el.className='toast',3000);}
+
+// ── CALENDAR ──
+function chMo(d){calDt.setMonth(calDt.getMonth()+d);renderCal();}
+
+function openDayModal(ds){
+  const parts=ds.split('-');
+  const dt=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  const label=dt.toLocaleDateString('el-GR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('dayModalDate').textContent=label;
+  // collect all items for this day
+  const evs=D.events.filter(ev=>{const s=ev.start,e=ev.end||ev.start;return ds>=s&&ds<=e;});
+  const dls=D.projects.filter(pr=>pr.deadline===ds);
+  const checkouts=D.reservations.filter(r=>r.checkout===ds);
+  const checkins=D.reservations.filter(r=>r.checkin===ds);
+  let html='';
+  if(!evs.length&&!dls.length&&!checkouts.length&&!checkins.length){
+    html='<div style="color:var(--muted);font-size:0.85rem;padding:0.5rem 0;text-align:center;">Δεν υπάρχουν γεγονότα αυτή τη μέρα.</div>';
+  }
+  evs.forEach(ev=>{
+    const typeLabel={housing:'🏠 Ακίνητο',web:'💻 Web',deadline:'🔴 Deadline',personal:'🟣 Προσωπικό'}[ev.type]||ev.type;
+    html+=`<div class="day-item">
+      <div class="day-item-left">
+        <div class="day-item-dot" style="background:var(--${ev.type==='personal'?'personal':ev.type==='deadline'?'deadline':ev.type==='web'?'web':'housing'})"></div>
+        <div>
+          <div class="day-item-title">${ev.title}</div>
+          <div class="day-item-meta">${typeLabel}${ev.client?' · '+ev.client:''}${ev.phone?' · '+ev.phone:''}</div>
+          ${ev.notes?`<div class="day-item-notes">${ev.notes}</div>`:''}
+        </div>
+      </div>
+      <button class="day-del-btn" onclick="delDayEv(${ev.id})">🗑 Διαγραφή</button>
+    </div>`;
+  });
+  dls.forEach(pr=>{
+    html+=`<div class="day-item">
+      <div class="day-item-left">
+        <div class="day-item-dot" style="background:var(--deadline)"></div>
+        <div>
+          <div class="day-item-title">🔴 Deadline: ${pr.name}</div>
+          <div class="day-item-meta">💻 Web Project${pr.client?' · '+pr.client:''}</div>
+        </div>
+      </div>
+      <button class="day-del-btn" onclick="delDayDeadline(${pr.id})">🗑 Αφαίρεση</button>
+    </div>`;
+  });
+  checkins.forEach(r=>{
+    html+=`<div class="day-item">
+      <div class="day-item-left">
+        <div class="day-item-dot" style="background:var(--success)"></div>
+        <div>
+          <div class="day-item-title">✅ Check-in: ${r.name}</div>
+          <div class="day-item-meta">🏠 ${r.prop||r.property||'Ακίνητο'}${r.phone?' · '+r.phone:''}</div>
+        </div>
+      </div>
+      <button class="day-del-btn" onclick="delDayRes(${r.id})">🗑 Διαγραφή</button>
+    </div>`;
+  });
+  checkouts.forEach(r=>{
+    html+=`<div class="day-item">
+      <div class="day-item-left">
+        <div class="day-item-dot" style="background:var(--deadline)"></div>
+        <div>
+          <div class="day-item-title">🚪 Check-out: ${r.name}</div>
+          <div class="day-item-meta">🏠 ${r.prop||r.property||'Ακίνητο'}${r.phone?' · '+r.phone:''}</div>
+        </div>
+      </div>
+      <button class="day-del-btn" onclick="delDayRes(${r.id})">🗑 Διαγραφή</button>
+    </div>`;
+  });
+  document.getElementById('dayModalItems').innerHTML=html;
+  document.getElementById('dayModalAddBtn').onclick=()=>{
+    closeM('mDay');
+    document.getElementById('e-start').value=ds;
+    document.getElementById('e-end').value=ds;
+    openM('mEvent');
+  };
+  openM('mDay');
+}
+
+function delDayEv(id){
+  if(!confirm('Διαγραφή αυτού του γεγονότος;'))return;
+  D.events=D.events.filter(x=>x.id!==id);
+  sd();renderCal();
+  // refresh day modal if open
+  const dayDate=document.getElementById('dayModalDate').textContent;
+  toast('🗑 Γεγονός διαγράφηκε!');
+  closeM('mDay');
+}
+function delDayDeadline(id){
+  if(!confirm('Αφαίρεση deadline;'))return;
+  const pr=D.projects.find(x=>x.id===id);
+  if(pr)pr.deadline='';
+  sd();renderCal();renderProj();
+  toast('🗑 Deadline αφαιρέθηκε!');
+  closeM('mDay');
+}
+function delDayRes(id){
+  if(!confirm('Διαγραφή αυτής της κράτησης;'))return;
+  D.reservations=D.reservations.filter(x=>x.id!==id);
+  D.events=D.events.filter(x=>x.id!==id+2);
+  sd();renderCal();renderRes();
+  toast('🗑 Κράτηση διαγράφηκε!');
+  closeM('mDay');
+}
+
+function renderCal(){
+  const y=calDt.getFullYear(),m=calDt.getMonth();
+  document.getElementById('calLabel').textContent=MO[m]+' '+y;
+  const g=document.getElementById('calGrid');g.innerHTML='';
+  const today=new Date();
+  const firstDay=new Date(y,m,1).getDay();
+  const offset=(firstDay===0)?6:firstDay-1;
+  const dim=new Date(y,m+1,0).getDate(),dip=new Date(y,m,0).getDate();
+  const tot=Math.ceil((offset+dim)/7)*7;
+  for(let i=0;i<tot;i++){
+    const div=document.createElement('div');div.className='cal-day';
+    let day,tm=true,dt;
+    if(i<offset){day=dip-offset+i+1;tm=false;dt=new Date(y,m-1,day);}
+    else if(i>=offset+dim){day=i-offset-dim+1;tm=false;dt=new Date(y,m+1,day);}
+    else{day=i-offset+1;dt=new Date(y,m,day);}
+    if(!tm)div.classList.add('other-month');
+    if(dt.toDateString()===today.toDateString())div.classList.add('today');
+    const ds=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    div.onclick=()=>openDayModal(ds);
+    const n=document.createElement('div');n.className='cal-day-num';n.textContent=day;div.appendChild(n);
+    const hint=document.createElement('div');hint.className='cal-add-hint';hint.textContent='+ Προσθήκη';div.appendChild(hint);
+    D.events.filter(ev=>{const s=ev.start,e=ev.end||ev.start;return ds>=s&&ds<=e;}).forEach(ev=>{
+      const p=document.createElement('div');p.className='cal-event-pill '+(ev.type||'housing');p.textContent=ev.title;div.appendChild(p);
+    });
+    D.projects.filter(pr=>pr.deadline===ds).forEach(pr=>{
+      const p=document.createElement('div');p.className='cal-event-pill deadline';p.textContent='🔴 '+pr.name;div.appendChild(p);
+    });
+    D.reservations.filter(r=>r.checkin===ds).forEach(r=>{
+      const p=document.createElement('div');p.className='cal-event-pill housing';p.textContent='✅ '+r.name;div.appendChild(p);
+    });
+    D.reservations.filter(r=>r.checkout===ds&&r.checkin!==ds).forEach(r=>{
+      const p=document.createElement('div');p.className='cal-event-pill deadline';p.textContent='🚪 '+r.name;div.appendChild(p);
+    });
+    g.appendChild(div);
+  }
+}
+function saveEv(){
+  const title=document.getElementById('e-title').value.trim(),start=document.getElementById('e-start').value;
+  if(!title||!start){toast('⚠️ Συμπλήρωσε τίτλο και ημερομηνία','');return;}
+  const end=document.getElementById('e-end').value,type=document.getElementById('e-type').value,client=document.getElementById('e-client').value.trim(),phone=document.getElementById('e-phone').value.trim(),notes=document.getElementById('e-notes').value.trim();
+  D.events.push({id:Date.now(),title,start,end:end||start,type,client,phone,notes});
+  if(client&&!D.clients.find(c=>c.name.toLowerCase()===client.toLowerCase()))
+    D.clients.push({id:Date.now()+1,name:client,type,phone,email:'',notes:'Αυτόματα από ημερολόγιο',date:new Date().toISOString()});
+  sd();closeM('mEvent');
+  ['e-title','e-start','e-end','e-client','e-phone','e-notes'].forEach(id=>document.getElementById(id).value='');
+  renderCal();renderClients();
+  toast('✅ Γεγονός αποθηκεύτηκε!');
+}
+
+// ── CLIENTS ──
+function renderClients(){
+  const g=document.getElementById('clientsGrid');
+  let list=D.clients;
+  if(cFilt!=='all')list=list.filter(c=>c.type===cFilt);
+  if(cSrch)list=list.filter(c=>c.name.toLowerCase().includes(cSrch.toLowerCase())||(c.phone||'').includes(cSrch)||(c.email||'').toLowerCase().includes(cSrch.toLowerCase()));
+  if(!list.length){g.innerHTML='<div class="empty"><div class="empty-icon">👥</div><p>Δεν υπάρχουν επαφές ακόμα.</p></div>';return;}
+  const tl={housing:'🏠 Ακίνητο',web:'💻 Web',cooperator:'🤝 Συνεργάτης'};
+  g.innerHTML=list.map(c=>{
+    const ini=c.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    return`<div class="client-card"><button class="del-btn" onclick="del('clients',${c.id},event)">🗑</button>
+    <div class="c-avatar ${c.type}">${ini}</div>
+    <div class="c-name">${c.name}</div><div class="c-type ${c.type}">${tl[c.type]||c.type}</div>
+    <div class="c-info">
+    ${c.phone?`<div class="c-row"><span>📞</span><span>${c.phone}</span></div>`:''}
+    ${c.email?`<div class="c-row"><span>📧</span><span>${c.email}</span></div>`:''}
+    ${c.notes?`<div class="c-row"><span>📝</span><span style="color:var(--muted);font-size:0.74rem">${c.notes.substring(0,55)}${c.notes.length>55?'...':''}</span></div>`:''}
+    </div></div>`;
+  }).join('');
+}
+function srchC(v){cSrch=v;renderClients();}
+function filtC(t,b){cFilt=t;document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderClients();}
+function saveC(){
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){toast('⚠️ Συμπλήρωσε το όνομα','');return;}
+  D.clients.push({id:Date.now(),name,type:document.getElementById('c-type').value,phone:document.getElementById('c-phone').value.trim(),email:document.getElementById('c-email').value.trim(),notes:document.getElementById('c-notes').value.trim(),date:new Date().toISOString()});
+  sd();closeM('mClient');['c-name','c-phone','c-email','c-notes'].forEach(id=>document.getElementById(id).value='');
+  renderClients();toast('✅ Επαφή αποθηκεύτηκε!');
+}
+
+// ── RESERVATIONS ──
+function resSt(r){const t=new Date().toISOString().split('T')[0];return r.checkin<=t&&r.checkout>=t?'active':r.checkin>t?'upcoming':'past';}
+function resTab(t,b){rFilt=t;document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderRes();}
+function renderRes(){
+  const g=document.getElementById('resList');
+  let list=D.reservations;
+  if(rFilt!=='all')list=list.filter(r=>resSt(r)===rFilt);
+  if(!list.length){g.innerHTML='<div class="empty"><div class="empty-icon">🏠</div><p>Δεν υπάρχουν κρατήσεις.</p></div>';return;}
+  const lb={active:'Ενεργή',upcoming:'Επερχόμενη',past:'Παρελθόν'};
+  g.innerHTML=list.sort((a,b)=>a.checkin.localeCompare(b.checkin)).map(r=>{
+    const st=resSt(r),ni=Math.round((new Date(r.checkout)-new Date(r.checkin))/86400000);
+    return`<div class="reservation-card"><button class="del-btn" onclick="del('reservations',${r.id},event)">🗑</button>
+    <div class="res-dot ${st}"></div>
+    <div class="res-info"><div class="res-name">${r.name}</div>
+    <div class="res-meta">📍 ${r.prop||r.property||'—'} &nbsp;·&nbsp; 📅 ${r.checkin} → ${r.checkout}</div>
+    ${r.phone?`<div class="res-meta">📞 ${r.phone}${r.email?' &nbsp;·&nbsp; 📧 '+r.email:''}</div>`:''}
+    ${r.notes?`<div class="res-meta">📝 ${r.notes.substring(0,55)}</div>`:''}
+    </div>
+    <div class="res-badge ${st}">${lb[st]}</div>
+    <div class="res-nights"><strong>${ni}</strong><span>νύχτες</span></div>
+    </div>`;
+  }).join('');
+}
+function saveR(){
+  const name=document.getElementById('r-name').value.trim(),ci=document.getElementById('r-in').value,co=document.getElementById('r-out').value;
+  if(!name||!ci||!co){toast('⚠️ Συμπλήρωσε τα υποχρεωτικά πεδία','');return;}
+  const prop=document.getElementById('r-prop').value.trim(),phone=document.getElementById('r-phone').value.trim(),email=document.getElementById('r-email').value.trim(),notes=document.getElementById('r-notes').value.trim(),id=Date.now();
+  D.reservations.push({id,name,prop,property:prop,checkin:ci,checkout:co,phone,email,notes});
+  if(!D.clients.find(c=>c.name.toLowerCase()===name.toLowerCase()))
+    D.clients.push({id:id+1,name,type:'housing',phone,email,notes:'Από κράτηση: '+(prop||''),date:new Date().toISOString()});
+  D.events.push({id:id+2,title:'🏠 '+name,start:ci,end:co,type:'housing',client:name,phone,notes});
+  sd();closeM('mRes');['r-name','r-prop','r-in','r-out','r-phone','r-email','r-notes'].forEach(id=>document.getElementById(id).value='');
+  renderRes();renderCal();renderClients();toast('✅ Κράτηση, επαφή & ημερολόγιο ενημερώθηκαν!');
+}
+
+// ── PROJECTS ──
+function renderProj(){
+  const g=document.getElementById('projGrid');
+  if(!D.projects.length){g.innerHTML='<div class="empty"><div class="empty-icon">💻</div><p>Δεν υπάρχουν projects.</p></div>';return;}
+  const lb={pending:'Εκκρεμεί',active:'Σε εξέλιξη',completed:'Ολοκληρώθηκε'};
+  const t=new Date().toISOString().split('T')[0];
+  g.innerHTML=D.projects.map(p=>{
+    const tags=(p.tags||'').split(',').filter(Boolean);
+    const over=p.deadline&&p.deadline<t&&p.status!=='completed';
+    return`<div class="project-card"><button class="del-btn" onclick="del('projects',${p.id},event)">🗑</button>
+    <div class="p-header"><div class="p-name">${p.name}</div><div class="p-status ${p.status}">${lb[p.status]}</div></div>
+    <div class="p-client">👤 ${p.client||'—'}</div>
+    ${p.deadline?`<div class="p-deadline${over?' overdue':''}">${over?'⚠️ Εκπρόθεσμο':'🔴 Deadline'}: ${p.deadline}</div>`:''}
+    <div class="progress-bar"><div class="progress-fill" style="width:${p.progress||0}%"></div></div>
+    <div class="progress-label"><span>Πρόοδος</span><span>${p.progress||0}%</span></div>
+    ${p.notes?`<div style="font-size:0.76rem;color:var(--muted);margin-top:0.7rem">${p.notes.substring(0,80)}${p.notes.length>80?'...':''}</div>`:''}
+    ${tags.length?`<div class="p-tags">${tags.map(t=>`<span class="p-tag">${t.trim()}</span>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function saveP(){
+  const name=document.getElementById('p-name').value.trim();
+  if(!name){toast('⚠️ Συμπλήρωσε το όνομα','');return;}
+  const dl=document.getElementById('p-deadline').value,id=Date.now();
+  D.projects.push({id,name,client:document.getElementById('p-client').value.trim(),status:document.getElementById('p-status').value,progress:parseInt(document.getElementById('p-prog').value)||0,deadline:dl,tags:document.getElementById('p-tags').value.trim(),notes:document.getElementById('p-notes').value.trim()});
+  sd();closeM('mProj');['p-name','p-client','p-prog','p-deadline','p-tags','p-notes'].forEach(id=>document.getElementById(id).value='');
+  renderProj();renderCal();toast('✅ Project αποθηκεύτηκε'+(dl?' — Deadline στο ημερολόγιο!':'!'));
+}
+
+// ── VAULT ──
+function renderVault(){
+  const g=document.getElementById('vaultGrid');
+  if(!D.vault.length){g.innerHTML='<div class="empty"><div class="empty-icon">🔐</div><p>Δεν υπάρχουν εγγραφές.</p></div>';return;}
+  g.innerHTML=D.vault.map(v=>`<div class="vault-card"><button class="del-btn" onclick="del('vault',${v.id},event)">🗑</button>
+  <div class="v-service">${v.service}</div><div class="v-cat">${v.category}</div>
+  ${v.user?`<div class="v-field"><span class="v-label">Username</span><div style="display:flex;align-items:center;gap:0.4rem"><span class="v-val">${v.user}</span><button class="copy-btn" onclick="cp('${v.user.replace(/'/g,"\\'")}')">📋</button></div></div>`:''}
+  ${v.pass?`<div class="v-field"><span class="v-label">Κωδικός</span><div style="display:flex;align-items:center;gap:0.4rem"><span class="v-val">••••••••</span><button class="copy-btn" onclick="cp('${v.pass.replace(/'/g,"\\'")}')">📋</button></div></div>`:''}
+  ${v.url?`<div class="v-field"><span class="v-label">URL</span><a href="${v.url}" target="_blank" style="font-size:0.73rem;color:var(--web)">${v.url.substring(0,28)}${v.url.length>28?'...':''}</a></div>`:''}
+  ${v.notes?`<div style="font-size:0.73rem;color:var(--muted);margin-top:0.5rem">${v.notes}</div>`:''}
+  </div>`).join('');
+}
+function cp(val){navigator.clipboard.writeText(val).then(()=>toast('📋 Αντιγράφηκε!'));}
+function saveV(){
+  const svc=document.getElementById('v-svc').value.trim();
+  if(!svc){toast('⚠️ Συμπλήρωσε την υπηρεσία','');return;}
+  D.vault.push({id:Date.now(),service:svc,category:document.getElementById('v-cat').value,user:document.getElementById('v-user').value.trim(),pass:document.getElementById('v-pass').value,url:document.getElementById('v-url').value.trim(),notes:document.getElementById('v-notes').value.trim()});
+  sd();closeM('mVault');['v-svc','v-user','v-pass','v-url','v-notes'].forEach(id=>document.getElementById(id).value='');
+  renderVault();toast('✅ Εγγραφή αποθηκεύτηκε!');
+}
+
+// ── DELETE ──
+function del(type,id,e){
+  e.stopPropagation();
+  if(!confirm('Σίγουρα θέλεις να διαγράψεις αυτή την εγγραφή;'))return;
+  D[type]=D[type].filter(i=>i.id!==id);sd();
+  if(type==='clients')renderClients();
+  if(type==='reservations'){renderRes();renderCal();}
+  if(type==='projects'){renderProj();renderCal();}
+  if(type==='vault')renderVault();
+  toast('🗑 Διαγράφηκε!');
+}
+</script>
+
+
+</body></html>
